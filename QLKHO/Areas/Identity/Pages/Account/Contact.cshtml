@@ -1,0 +1,30 @@
+﻿@page
+@model Validation_ModelBinder.Pages.ContactModel
+@{
+}
+
+<h1>Trang liên hệ</h1>
+<form asp-page="Contact" method="post" class="alert alert-info w-50 rounded" enctype="multipart/form-data">
+    <div asp-validation-summary="All">
+
+    </div>
+    <div class="my-2 px-2 form-group">
+        <label asp-for="@Model.FileUpLoader"></label>
+        <input asp-for="@Model.FileUpLoader" class="form-control" />
+        <span class="text-danger" asp-validation-for="@Model.FileUpLoader"></span>
+    </div>
+    <div class="my-2 px-2 form-group">
+        <label asp-for="@Model.FileUpLoads"></label>
+        <input asp-for="@Model.FileUpLoads" class="form-control" />
+        <span class="text-danger" asp-validation-for="@Model.FileUpLoads"></span>
+    </div>
+    <div class="p-2 d-flex">
+        <input type="submit" class="btn btn-danger m-auto"/>
+    </div>
+</form>
+<p>@Model.thongbao</p>
+<p>Thông tin nhận được</p>
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial"></partial>
+}

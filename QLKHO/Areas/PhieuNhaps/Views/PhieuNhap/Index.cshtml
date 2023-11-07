@@ -1,0 +1,108 @@
+﻿@model IEnumerable<QLKHO.Models.PhieuNhap>
+@using QLKHO.Helper
+@using System.Globalization
+@{
+    ViewData["title"] = "Phiếu Nhập";
+    var currentPage = ViewData["current"];
+    var countPage = ViewData["countpage"];
+}
+
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<h1>Danh sách Phiếu Nhập</h1>
+
+<div class="d-flex justify-content-between">
+    <a class="btn btn-outline-primary my-2" asp-action="Create">Tạo mới</a>
+    <div class="">
+        <form method="get" asp-action="Index" class=" form-inline mr-auto my-2 mw-100 navbar-search">
+            <div class="input-group">
+                <input name="search" value="@ViewBag.search" class="form-control bg-light border-0 small" placeholder="Tìm theo mã phiếu"
+                       aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="overflow-auto">
+    <table style="min-width: 600px;" class="table table-bordered">
+        <thead>
+            <tr>
+               <th>STT</th>
+               <th>Mã Phiếu Nhập</th>
+               <th>Số Lượng</th>
+               <th>Tổng Tiền</th>
+               <th>Ngày Lập</th>
+               <th>Chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var i = 1;
+            }
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>
+                        @i
+                        @{i++;}
+                    </td>
+                    <td>@item.MaPN</td>
+                    <td>@item.TongSoLuong</td>
+                    <td>@item.TongTien.ToString("C", new CultureInfo("vi-VN"))</td>
+                    <td>@String.Format("{0:dd/MM/yyyy}", item.NgayLap)</td>
+                    <td class="d-flex justify-content-around">
+                        <a class="btn btn-outline-success" asp-action="Details" asp-route-id="@item.MaPN">Chi Tiết</a>
+                        <!-- Button trigger modal -->
+                        @{
+                            var id = "SP" + item.MaPN;
+                            var select = "#" + id;
+                        }
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="@select">
+                            Xóa Phiếu
+                        </button>
+
+                        <!-- The Modal -->
+                        <div class="modal" id="@id">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Xóa Phiếu Nhập</h4>
+                                        <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                                    </div>
+                                    <form asp-action="Delete" method="post" asp-route-id="@item.MaPN">
+                                        <div class="modal-body">
+                                            <h4 class="text-center">Bạn có muốn xóa phiếu nhập có mã @item.MaPN ?</h4>
+                                        </div>
+
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Xóa</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
+                                    <!-- Modal body -->
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{
+    var pagemodel = new PagingModel()
+            {
+                currentPage = int.Parse(currentPage.ToString()),
+                countPage = int.Parse(countPage.ToString()),
+                generateUrl = (int? p) => Url.Action(nameof(Index), new { p = p, search = ViewBag.search })
+            };
+    <div class="float-right">
+        <partial name="_Paging" model="@pagemodel"></partial>
+    </div>
+}

@@ -1,0 +1,83 @@
+﻿@model IEnumerable<QLKHO.Models.DonViTinh>
+
+@{
+    ViewData["Title"] = "Danh sách đơn vị tính";
+    var i = 1;
+}
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<h1>Danh sách đơn vị tính</h1>
+
+<p>
+    <a class="btn btn-outline-primary" asp-action="Create">Tạo mới</a>
+</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                STT
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaDvt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TenDvt)
+            </th>
+            <th>
+                Hành động
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @i
+                @{i++;}
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaDvt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenDvt)
+            </td>
+            <td class="d-flex justify-content-around">
+                <a class="btn btn-outline-success my-1" asp-action="Edit" asp-route-id="@item.MaDvt">Sửa</a>
+                    @{
+                        var id = "KH" + item.MaDvt;
+                        var select = "#" + id;
+                    }
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="@select">
+                        Xóa
+                    </button>
+
+                    <!-- The Modal -->
+                    <div class="modal" id="@id">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Xóa Đơn vị tính</h4>
+                                    <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                                </div>
+                                <form asp-action="Delete" method="post" asp-route-id="@item.MaDvt">
+                                    <!-- Modal body -->
+                                    <div class="modal-body">
+                                        <h5 class="text-center">Bạn có muốn xóa đơn vị tính có tên @item.TenDvt không ?</h5>
+                                    </div>
+
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Xóa</button>
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

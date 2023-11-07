@@ -1,0 +1,146 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using System.Globalization
+@model QLKHO.Areas.PhieuXuats.Controllers.PhieuXuatController.InputDetails
+@{
+    ViewData["title"] = "Chi tiết phiếu xuất";
+    var i = 1;
+}
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<div>
+    <h2 class="text-center">Phiếu Xuất</h2>
+    <div class="row">
+        <div class="col-sm-4">
+            <p>Mã Phiếu: @Model.MaPx.</p>
+            <p>Ngày Lập: @String.Format("{0:dd/MM/yyyy}", Model.phieuXuat.NgayLap).</p>
+            <p>Tổng số lượng: @Model.phieuXuat.TongSoLuong.</p>
+        </div>
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            @if (Model.user != null)
+            {
+                <p>Người Lập: @Model.user.UserName - @Model.user.FullName.</p>
+            }
+            @if (Model.khachHang != null)
+            {
+                <p>Khách Hàng: @Model.khachHang.TenKh.</p>
+            }
+            <p>Tổng Tiền: @Model.phieuXuat.TongTien.ToString("C", new CultureInfo("vi-VN")).</p>
+        </div>
+    </div>
+    <div style="max-height: 800px" class="overflow-auto">
+        <table style="min-width: 600px" class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>STT</td>
+                    <td>Mã Sản Phẩm</td>
+                    <td>Tên Sản Phẩm</td>
+                    <td>Hình ảnh</td>
+                    <td>Số Lượng</td>
+                    <td>Đơn Giá</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.sanPham_phieuXuat)
+                {
+                    <tr>
+                        <td>
+                            @i
+                            @{
+                                i++;
+                            }
+                        </td>
+                        <td>@item.MaSp</td>
+                        <td>@item.TenSp</td>
+                        <td>
+                            <img class="img-thumbnail" style="width:100px; height:80px; object-fit:cover" src="~/Upload/PhotoSanPham/@item.Photo">
+                        </td>
+                        <td>@item.SoLuong</td>
+                        <td>@item.DonGia.ToString("C", new CultureInfo("vi-VN"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="my-2 d-flex flex-wrap">
+        <div class="my-2 flex-grow-1">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myPhieu">
+                Xóa Phiếu Xuất
+            </button>
+
+            <!-- The Modal -->
+            <div class="modal" id="myPhieu">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Xóa Phiếu Xuất</h4>
+                            <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                        </div>
+                        <form asp-action="Delete" method="post" asp-route-id="@Model.MaPx">
+                            <div class="modal-body">
+                                <h5 class="text-center">Bạn có muốn xóa phiếu xuất có mã @Model.MaPx ?</h5>
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Xóa</button>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                        <!-- Modal body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="my-2 d-flex justify-content-around flex-wrap">
+            <a id="btnPdf" class="btn btn-danger mr-2" asp-action="GeneratePdf" asp-route-id="@Model.MaPx">
+                Xuất PDF
+                <i class="far fa-file-pdf ml-1"></i>
+            </a>
+            <div class="">
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#guiPhieu">
+                    Gửi Email
+                    <i class="fas fa-envelope ml-1"></i>
+                </button>
+                <!-- The Modal -->
+                <div class="modal" id="guiPhieu">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Gửi Phiếu Xuất</h4>
+                                <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                            </div>
+                            <form asp-action="SendPhieu" method="post" asp-route-id="@Model.MaPx">
+                                <div class="modal-body">
+                                    <h3 class="text-center">Nhập Email để gửi phiếu có mã có mã @Model.MaPx ?</h3>
+                                </div>
+                                <div class="form-group mx-2">
+                                    <label asp-for="@Model.Email" class="control-label"></label>
+                                    <input asp-for="@Model.Email" class="form-control" />
+                                    <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                                </div>
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Gửi</button>
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </form>
+                            <!-- Modal body -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="my-2">
+        <a class="btn btn-primary" asp-action="Index">Quay lại danh sách</a>
+    </div>
+</div>

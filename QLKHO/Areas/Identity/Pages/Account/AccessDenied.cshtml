@@ -1,0 +1,11 @@
+﻿@page "/accessdenied"
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Hạn chế truy cập";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<header>
+    <h1 class="text-danger">@ViewData["Title"]</h1>
+    <p class="text-danger">Bạn đã bị hạn chế truy cập vào chức năng này.</p>
+</header>

@@ -1,0 +1,333 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using System.Globalization
+@using Newtonsoft.Json
+@using System.Globalization
+@using System.Web
+@model QLKHO.Areas.ThongKes.Controllers.ThongKeController.BaoCao
+@{
+
+}
+<div class="row">
+
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Tổng Số Lượng Tồn
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.soluongton</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Tổng Vốn Bỏ Ra
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.von.ToString("C", new CultureInfo("vi-VN"))</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Tổng Doanh Thu
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.doanhthu.ToString("C", new CultureInfo("vi-VN"))</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Tổng Lãi
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.lai.ToString("C", new CultureInfo("vi-VN"))</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<h1 class="text-center">Thống Kê Kinh doanh năm @Model.searchYear</h1>
+<div class="">
+    <form method="get" asp-action="Index" class=" form-inline mr-auto my-2 mw-100 navbar-search">
+        <div class="input-group">
+            <select asp-for="@Model.searchYear" class="form-control bg-light border-1 small px-5" placeholder="Chọn năm"
+                    aria-label="Search" aria-describedby="basic-addon2">
+                @for(int i = 2015; i <= DateTime.Now.Year; i++)
+                {
+                    <option value="@i">Năm @i</option>
+                }
+            </select>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<div>
+    
+    <div class="overflow-auto">
+        <canvas id="myChartKinhDoanh" style="width:100%; min-width: 600px; min-height: 400px"></canvas>
+    </div>
+    <h5 class="text-center">Biểu đồ thống kê kinh doanh năm @Model.searchYear</h5>
+    
+    <a asp-action="ExportExcel" asp-route-year="@Model.searchYear" class="btn btn-success my-2" style="background-color:#016e3a">
+        Xuất Excel
+        <i class="fas fa-file-excel ml-1"></i>
+    </a>
+    <div class="overflow-auto">
+        <table class="table table-bordered" style="min-width: 600px">
+            <thead>
+                <tr>
+                    <th>Tháng</th>
+                    <th>Vốn bỏ ra</th>
+                    <th>Doanh Thu</th>
+                    <th>Lãi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(int i = 0; i < Model.baoCaoDoanhThus.Count(); i++)
+                {
+                    <tr>
+                        <td>Tháng @Model.baoCaoDoanhThus[i].thang</td>
+                        <td>@Model.baoCaoVons[i].TongTien.ToString("C", new CultureInfo("vi-VN"))</td>
+                        <td>@Model.baoCaoDoanhThus[i].TongTien.ToString("C", new CultureInfo("vi-VN"))</td>
+                        <td>
+                            @{
+                                var lai = Model.baoCaoDoanhThus[i].TongTien - Model.baoCaoVons[i].TongTien;
+                            }
+                            @lai.ToString("C", new CultureInfo("vi-VN"))
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>Tổng năm @Model.searchYear</td>
+                    <td>@Model.baoCaoVons.Sum(bc => bc.TongTien).ToString("C", new CultureInfo("vi-VN"))</td>
+                    <td>@Model.baoCaoDoanhThus.Sum(bc => bc.TongTien).ToString("C", new CultureInfo("vi-VN"))</td>
+                    <td>
+                        @{
+                            var lainam = Model.baoCaoDoanhThus.Sum(bc => bc.TongTien) - Model.baoCaoVons.Sum(bc => bc.TongTien);
+                        }
+                        @lainam.ToString("C", new CultureInfo("vi-VN"))
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h5 class="text-center mb-2">Bảng Thống kê kinh doanh năm @Model.searchYear</h5>
+</div>
+<hr />
+<h2 class="text-center">Thống kê về Sản Phẩm</h2>
+<div class="row">
+    <div class="col-xl-6">
+        <canvas id="myChartPrice" style="min-height: 250px; width: 100%"></canvas>
+    </div>
+    <div class="col-xl-6">
+        <canvas id="myChartSanPham" style="width:100%"></canvas>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/Assets/vendor/chart.js/Chart.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script type="text/javascript">
+        var ctx = document.getElementById('myChartKinhDoanh').getContext('2d');
+       //data kinh doanh
+        var lsvon = []
+        var lsdoanhthu = [];
+        
+        @{
+            // set data kinh doanh
+            for(int i = 0; i < Model.baoCaoVons.Count(); i++)
+            {
+                @:lsvon.push(@Model.baoCaoVons[i].TongTien)
+            }
+            for(int i = 0; i < Model.baoCaoDoanhThus.Count(); i++)
+            {
+                @:lsdoanhthu.push(@Model.baoCaoDoanhThus[i].TongTien)
+            }
+        }
+        // Dữ liệu cho biểu đồ cột
+        var data = {
+            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+            datasets: [{
+                label: 'Vốn bỏ ra',
+                data: lsvon,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Doanh Thu',
+                data: lsdoanhthu,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        };
+        // Cấu hình biểu đồ
+        var options = {
+            plugins: {
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    offset: -10,
+                    color: 'black',
+                    font: {
+                        weight: 'bold'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        };
+        // Tạo biểu đồ
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: options
+        });
+
+        // Biểu đồ hình tròn
+        // Lấy tham chiếu đến canvas
+
+        var ctx_tron = document.getElementById('myChartPrice').getContext('2d');
+        // data số lượng sản phẩm theo khoảng giá
+        var lssoLuong = [];
+        var lskhoangGia = [
+            "Dưới 1 triệu",
+            "Từ 1 triệu đến dưới 2.5 triệu",
+            "Từ 2.5 triệu đến dưới 5 triệu",
+            "Từ 5 triệu đến dưới 10 triệu",
+            "Trên 10 triệu"
+        ];
+        @{
+            // set data số lượng sản phẩm theo khoảng giá
+            for (int i = 0; i < Model.baoCaoSpByPrice.Count(); i++)
+            {
+                @:lssoLuong.push(@Model.baoCaoSpByPrice[i].soLuong)
+            }
+        }
+        // Tạo dữ liệu cho biểu đồ
+        var data = {
+            labels: lskhoangGia,
+            datasets: [{
+                data: lssoLuong,
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(75, 192, 192)',
+                    'rgb(255, 205, 86)',
+                    'rgb(201, 203, 207)',
+                    'rgb(54, 162, 235)'
+                ],
+            }]
+        };
+
+        // Cấu hình biểu đồ
+        var options = {
+            // Cấu hình tùy chọn cho biểu đồ
+            title: {
+                display: true,
+                text: "Biểu đồ thống kê các sản phẩm theo giá bán"
+            }
+        };
+
+        var myPieChart = new Chart(ctx_tron, {
+            type: 'pie',
+            data: data,
+            options: options
+        });
+        // Biểu đồ cột sản phẩm
+        var tenSp = [];
+        var maSp = [];
+        var soLuongBan = [];
+        @{
+            for(int i = 0;i < Model.baoCaoSanPhamBan.Count(); i++)
+            {
+                @:maSp.push('MaSp:@Model.baoCaoSanPhamBan[i].MaSp')
+                @:tenSp.push('@Model.baoCaoSanPhamBan[i].TenSp \n MaSp:@Model.baoCaoSanPhamBan[i].MaSp')
+                @:soLuongBan.push(@Model.baoCaoSanPhamBan[i].soLuong)
+            }
+        }
+        new Chart("myChartSanPham", {
+            type: "bar",
+            data: {
+                labels: maSp,
+                datasets: [{
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                    ],
+                    borderWidth: 1,
+                    data: soLuongBan
+                }]
+            },
+            options: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: "Các sản phẩm được bán nhiều nhất"
+                }
+            }
+        });
+    </script>
+}

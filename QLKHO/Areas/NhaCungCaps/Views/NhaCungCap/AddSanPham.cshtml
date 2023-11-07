@@ -1,0 +1,119 @@
+﻿@model QLKHO.Areas.NhaCungCaps.Controllers.NhaCungCapController.InputModel
+
+@{
+    ViewData["Title"] = "AddSanPhams";
+}
+
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+
+<h1>Danh sách Sản Phẩm</h1>
+<div class="my-3">
+    <form asp-action="AddSanPham" method="get" class=" form-inline mr-auto my-2 mw-100 navbar-search">
+        <div class="input-group">
+            <input type="hidden" name="id" value="@Model.MaNcc" />
+            <input type="text" name="search" value="@ViewBag.search" class="form-control bg-light border-0 small" placeholder="Tìm sản phẩm"
+                   aria-label="Search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="max-height: 800px" class="overflow-auto">
+    <table style="min-width: 600px" class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mã sản phẩm
+                </th>
+                <th>
+                    Tên sản phẩm
+                </th>
+                <th>
+                    Số lượng có
+                </th>
+                <th>
+                    Hình ảnh
+                </th>
+                <th>
+                    Đơn vị tính
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.sanPhams)
+            {
+                <tr>
+                    <td>
+                        @item.MaSp
+                    </td>
+                    <td>
+                        @item.TenSp
+                    </td>
+                    <td>
+                        @item.SoLuongCo
+                    </td>
+                    <td>
+                        <img class="img-thumbnail" style="width:100px; height:80px; object-fit:cover" 
+                        src="~/Upload/PhotoSanPham/@item.Photo">
+                    </td>
+                    <td>
+                        @item.DonViTinh.TenDvt
+                    </td>
+                    <td>
+                        @{
+                            var id = "SP" + item.MaSp;
+                            var select = "#"+id.ToString();
+                        }
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="@select">
+                            Thêm Sản Phẩm
+                        </button>
+        
+                         <!-- The Modal -->
+                            <div class="modal" id="@id">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+        
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Thêm Sản Phẩm</h4>
+                                        <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                                    </div>
+                                    <form asp-action="AddSanPham" method="post">
+                                         <div class="modal-body">
+                                            <div class="form-group">
+                                                <input type="hidden" asp-for="@Model.MaNcc" value="@Model.MaNcc" class="form-control" />
+                                                <input type="hidden" asp-for="@Model.MaSp" value="@item.MaSp"class="form-control" />
+                                                <label asp-for="@Model.GiaNhap" class="control-label"></label>
+                                                <input asp-for="@Model.GiaNhap" class="form-control" />
+                                                <span asp-validation-for="@Model.GiaNhap" class="text-danger"></span>
+                                            </div>
+                                         </div>
+        
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Thêm</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
+                                     <!-- Modal body -->
+                                    </div>
+                                </div>
+                            </div>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<a asp-action="Details" asp-route-id="@Model.MaNcc" class="btn btn-outline-primary mt-1">Xem Nhà Cung Cấp</a>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,73 @@
+﻿@page
+@using QLKHO.Helper
+@model QLKHO.Areas.Admin.Pages.Users.IndexModel
+@inject UserManager<AppUser> _usermanage
+@{
+}
+<partial name="_StatusMessage" model="@Model.StatusMessage"></partial>
+<h2>Danh sách các Tài khoản</h2>
+<div class="my-3">
+    <form method="get" class=" form-inline mr-auto my-2 mw-100 navbar-search">
+        <div class="input-group">
+            <input asp-for="@Model.search" class="form-control bg-light border-0 small" placeholder="Tìm theo username"
+                   aria-label="Search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="overflow-auto">
+    <table style="min-width:600px" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã tài khoản</th>
+                <th>Tên đăng nhập</th>
+                <td>Vai trò</td>
+                <th>Email</th>
+                <th>Họ và tên</th>
+                <th>Tác vụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.users)
+            {
+                    <tr>
+                    <td>@user.Id</td>
+                    <td>@user.UserName</td>
+                    @{
+                        List<string> roleName = (await _usermanage.GetRolesAsync(user)).ToList();
+                        if(roleName.Count == 0)
+                        {
+                            <td><a class="" asp-page="./AddRole" asp-route-userid="@user.Id">+ Thêm vai trò</a></td>
+                        }
+                        else
+                        {
+                            var role = string.Join(", ", roleName);
+                            <td>
+                                <a class="" asp-page="./AddRole" asp-route-userid="@user.Id">@role</a>
+                            </td>
+                        }
+                    }
+                
+                    <td>@user.Email</td>
+                    <td>@user.FullName</td>
+                    <td>
+                        <a class="btn btn-success" asp-page="./SetPassword" asp-route-userid="@user.Id">Đặt mật khẩu</a>
+                    </td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{
+    var pagemodel = new PagingModel()
+            {
+                currentPage = Model.currentPage,
+                countPage = Model.countPage,
+                generateUrl = (int? p) => Url.Page("./Index", new { p = p, search = Model.search })
+            };
+    <partial name="_Paging" model="@pagemodel"></partial>
+}

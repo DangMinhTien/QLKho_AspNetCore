@@ -1,0 +1,34 @@
+﻿@model QLKHO.Models.DonViTinh
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<h1>Sửa</h1>
+
+<h4>Đơn vị tính</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaDvt" />
+            <div class="form-group">
+                <label asp-for="TenDvt" class="control-label"></label>
+                <input asp-for="TenDvt" class="form-control" />
+                <span asp-validation-for="TenDvt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Sửa" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-primary" asp-action="Index">Quay lại danh sách</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

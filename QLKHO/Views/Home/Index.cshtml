@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using QLKHO.Models
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+    AppUser user = await UserManager.GetUserAsync(User);
+    if(user != null)
+    {
+        <h1 class="display-4 text-center">Xin Chào @user.FullName !</h1>
+        <p>@Url.Action("Details","PhieuNhap", new{area = "PhieuNhaps",id= 10, price = 21.54})</p>
+    }
+}

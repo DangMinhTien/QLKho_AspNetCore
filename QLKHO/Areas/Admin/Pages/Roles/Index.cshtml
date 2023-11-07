@@ -1,0 +1,72 @@
+﻿@page
+@model QLKHO.Areas.Admin.Pages.Roles.IndexModel
+@{
+    var i = 1;
+}
+<h2>Danh sách các Role</h2>
+<partial name="_StatusMessage" model="@Model.StatusMessage"></partial>
+<div>
+    <a class="btn btn-primary mb-2" asp-page="./Create">Tạo quyền</a>
+</div>
+<div class="overflow-auto">
+    <table style="min-width:600px" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã quyền</th>
+                <th>Tên quyền</th>
+                <th>Tác vụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model.roles)
+            {
+                <tr>
+                    <td>
+                        @i
+                        @{i++;}
+                    </td>
+                    <td>@role.Id</td>
+                    <td>@role.Name</td>
+                    <td class="d-flex justify-content-around">
+                        <a class="btn btn-success" asp-page="./Edit" asp-route-roleid="@role.Id">Chỉnh sửa</a>
+                        @{
+                            var id = "role" + role.Id;
+                            var select = "#" + id;
+                        }
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="@select">
+                            Xóa
+                        </button>
+
+                        <!-- The Modal -->
+                        <div class="modal" id="@id">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Xóa quyền</h4>
+                                        <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                                    </div>
+                                    <form method="post" asp-route-roleid="@role.Id">
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <h5 class="text-center">Bạn có muốn xóa quyền có tên @role.Name không ?</h5>
+                                        </div>
+
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Xóa</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,58 @@
+﻿@model QLKHO.Areas.SanPhams.Controllers.SanPhamController.InputEdit
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<h4>Sửa Sản Phẩm</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaSp" />
+            <input type="hidden" asp-for="Photo" />
+            <div class="form-group">
+                <label asp-for="TenSp" class="control-label"></label>
+                <input asp-for="TenSp" class="form-control" />
+                <span asp-validation-for="TenSp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaBan" class="control-label"></label>
+                <input asp-for="GiaBan" class="form-control" />
+                <span asp-validation-for="GiaBan" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SoLuong" class="control-label"></label>
+                <input asp-for="SoLuong" class="form-control" />
+                <span asp-validation-for="SoLuong" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FileUpLoader" class="control-label"></label>
+                <input id="file_upload" asp-for="FileUpLoader" class="form-control" />
+                <span asp-validation-for="FileUpLoader" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Ảnh sản phẩm</label>
+                <img id="img_hienthi" style="width: 200px; height: 150px; object-fit: contain" src="~/Upload/PhotoSanPham/@Model.Photo"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaDvt" class="control-label"></label>
+                <select asp-for="MaDvt" class="form-control" asp-items="ViewBag.MaDvt"></select>
+                <span asp-validation-for="MaDvt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Sửa" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-primary" asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/upload_img.js"></script>
+}

@@ -1,0 +1,102 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject QLKHO.Models.AppDbContext _context;
+@using System.Globalization
+@model QLKHO.Areas.PhieuNhaps.Controllers.PhieuNhapController.InputModel
+@{
+
+}
+
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<div class="row">
+    <form class="col-sm-4" method="get" asp-action="Create">
+        <div class="form-group">
+            <label class="form-label">Chọn nhà cung cấp</label>
+            <select class="form-control" asp-for="@Model.MaNcc" asp-items="@Model.NhaCungCaps"></select>
+        </div>
+        <button type="submit" class="btn btn-outline-info mb-1">Chọn</button>
+    </form>
+</div>
+<a class="btn btn-outline-primary mb-2" asp-action="Index">Quay lại danh sách</a>
+@if(Model.nhaCungCap != null)
+{
+    <div style="max-height: 600px" class="overflow-auto">
+        <table style="min-width: 600px;" class="table table-bordered">
+            <thead>
+                <tr>
+                  <th>Mã sản phẩm</th>
+                  <th>Tên sản phẩm</th>
+                  <th>Đơn giá</th>
+                  <th>Hình ảnh</th>
+                  <th>Chọn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.sanPhams)
+                {
+                    <tr>
+                      <td class="first">@item.MaSp</td>
+                      <td>@item.TenSp</td>
+                        @{
+                            var ctncc = _context.chiTietNhaCungCaps
+                            .SingleOrDefault(ct => ct.MaNcc == Model.nhaCungCap.MaNcc && ct.MaSp == item.MaSp);
+                            <td data-price="@ctncc.GiaNhap">
+                                @ctncc.GiaNhap.ToString("C", new CultureInfo("vi-VN"))
+                            </td>
+                        }
+                      <td>
+                          <img class="img-thumbnail" style="width:100px; height:80px; object-fit:cover" src="~/Upload/PhotoSanPham/@item.Photo">
+                      </td>
+                      <td>
+                        <button class="btn btn-primary btthem">Chọn</button>
+                      </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+        <form method="post" asp-action="Create">
+        <h1 class="text-center">Phiếu nhập</h1>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="row">
+            <div class="form-group col-sm-4">
+                <label asp-for="@Model.NgayLap" class="control-label"></label>
+                <input asp-for="@Model.NgayLap" class="form-control"/>
+                <span asp-validation-for="@Model.NgayLap" class="text-danger"></span>
+            </div>
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <p class="display-6">Tên nhà cung cấp: @Model.nhaCungCap.TenNcc</p>
+            </div>
+        </div>
+        <input type="hidden" asp-for="@Model.MaNcc" value="@Model.nhaCungCap.MaNcc"/>
+        <div class="overflow-auto">
+            <table style="min-width: 600px" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Mã sản phẩm</th>
+                <th>Tên sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th>Chọn</th>
+              </tr>
+            </thead>
+            <tbody id="dschon">
+                
+            </tbody>
+          </table>
+        </div>
+          <p>Tổng Tiền :
+            <span id="tongtien"></span>
+          </p>
+          <button type="submit" class="btn btn-primary">Tạo Phiếu</button>
+        </form>
+}
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/phieunhap.js"></script>
+}

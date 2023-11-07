@@ -1,0 +1,204 @@
+﻿@model QLKHO.Areas.NhaCungCaps.Controllers.NhaCungCapController.InputModel
+@using QLKHO.Models
+@using System.Globalization
+@using QLKHO.Helper
+@inject QLKHO.Models.AppDbContext _context;
+@{
+    ViewData["Title"] = "Details";
+    var currentPage = ViewData["current"];
+    var countPage = ViewData["countpage"];
+}
+
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<h1>Chi tiết Nhà Cung Cấp</h1>
+
+<div>
+    <h4>NhaCungCap</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.nhacungcap.MaNcc)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.nhacungcap.MaNcc)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.nhacungcap.TenNcc)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.nhacungcap.TenNcc)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.nhacungcap.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.nhacungcap.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.nhacungcap.Sdt)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.nhacungcap.Sdt)
+        </dd>
+    </dl>
+</div>
+<div>
+    <h2>Danh sách Sản Phẩm thuộc Nhà Cung Cấp</h2>
+    <hr />
+    <a class="btn btn-outline-primary my-2" asp-action="AddSanPham" asp-route-id="@Model.nhacungcap.MaNcc">Thêm sản phẩm</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                    <th>
+                        Mã sản phẩm
+                    </th>
+                    <th>
+                        Tên sản phẩm
+                    </th>
+                    <th>
+                        Hình ảnh
+                    </th>
+                    <th>
+                        Giá Nhập
+                    </th>
+                    <th>
+                        Đơn vị tính
+                    </th>
+                    <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.sanPhams)
+             {
+                    <tr>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.MaSp)
+                        </td>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.TenSp)
+                        </td>
+                        <td>
+                            <img class="img-thumbnail" style="width:100px; height:80px; object-fit:cover" src="~/Upload/PhotoSanPham/@item.Photo">
+                        </td>
+                        <td>
+                                @{
+                                    ChiTietNhaCungCap ct = _context.chiTietNhaCungCaps
+                                        .SingleOrDefault(ctncc => ctncc.MaNcc == Model.nhacungcap.MaNcc && ctncc.MaSp == item.MaSp);
+                                    if(ct != null)
+                                    {
+                                        @ct.GiaNhap.ToString("C", new CultureInfo("vi-VN"))
+                                    }
+                                }
+                        </td>
+                        <td>
+                                @{
+                                    DonViTinh dvt = _context.donViTinhs.SingleOrDefault(dvt => dvt.MaDvt == item.MaDvt);
+                                    if(dvt != null)
+                                        @Html.DisplayFor(model => dvt.TenDvt)
+                                    ;
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    var id = "SP" + item.MaSp;
+                                    var select = "#" + id;
+                                }
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="@select">
+                                    Sửa
+                                </button>
+
+                                <!-- The Modal -->
+                                <div class="modal" id="@id">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+
+                                            <!-- Modal Header -->
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Sửa Sản Phẩm</h4>
+                                                <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                                            </div>
+                                            <form asp-action="EditSanPhanInNCC" method="post">
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <input type="hidden" asp-for="@Model.MaNcc" value="@Model.nhacungcap.MaNcc" class="form-control" />
+                                                        <input type="hidden" asp-for="@Model.MaSp" value="@item.MaSp" class="form-control" />
+                                                        <label asp-for="@Model.GiaNhap" class="control-label"></label>
+                                                        <input asp-for="@Model.GiaNhap" class="form-control" value="@ct.GiaNhap" />
+                                                        <span asp-validation-for="@Model.GiaNhap" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Modal footer -->
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Sửa</button>
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
+                                                </div>
+                                            </form>
+                                            <!-- Modal body -->
+                                        </div>
+                                    </div>
+                                </div>
+                                @*
+                                    Xóa 
+                                *@
+                                @{
+                                    var id1 = "SPNCC" + item.MaSp;
+                                    var select1 = "#" + id1;
+                                }
+                                |
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="@select1">
+                                    Xóa
+                                </button>
+
+                                <!-- The Modal -->
+                                <div class="modal" id="@id1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+
+                                            <!-- Modal Header -->
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Xóa Sản Phẩm</h4>
+                                                <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                                            </div>
+                                            <form asp-action="DeleteSanPhanInNCC" method="post">
+                                                <div class="modal-body">
+                                                    <h5 class="text-center">Bạn có muốn xóa @item.TenSp khỏi nhà cung cấp ?</h5>
+                                                    <div class="form-group">
+                                                        <input type="hidden" asp-for="@Model.MaNcc" value="@Model.nhacungcap.MaNcc" class="form-control" />
+                                                        <input type="hidden" asp-for="@Model.MaSp" value="@item.MaSp" class="form-control" />
+                                                    </div>
+                                                </div>
+
+                                                <!-- Modal footer -->
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Đồng ý</button>
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Không</button>
+                                                </div>
+                                            </form>
+                                            <!-- Modal body -->
+                                        </div>
+                                    </div>
+                                </div>
+                        </td>
+                    </tr>
+            }
+        </tbody>
+</table>
+@{
+    var pagemodel = new PagingModel()
+            {
+                currentPage = int.Parse(currentPage.ToString()),
+                countPage = int.Parse(countPage.ToString()),
+                generateUrl = (int? p) => Url.Action("Details", new { p = p, id = Model.nhacungcap.MaNcc })
+            };
+    <div class="d-flex justify-content-end">
+        <partial name="_Paging" model="@pagemodel"></partial>
+    </div>
+}
+</div>
+
+<div>
+    <a class="btn btn-success" asp-action="Edit" asp-route-id="@Model.nhacungcap.MaNcc">Sửa</a> |
+    <a class="btn btn-primary" asp-action="Index">Quay lại danh sách</a>
+</div>

@@ -1,0 +1,43 @@
+﻿@model QLKHO.Models.NhaCungCap
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+<h1>Sửa Nhà Cung Cấp</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaNcc" />
+            <div class="form-group">
+                <label asp-for="TenNcc" class="control-label"></label>
+                <input asp-for="TenNcc" class="form-control" />
+                <span asp-validation-for="TenNcc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sdt" class="control-label"></label>
+                <input asp-for="Sdt" class="form-control" />
+                <span asp-validation-for="Sdt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-primary" asp-action="Index">Quay lại danh sách</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,128 @@
+﻿@model IEnumerable<QLKHO.Models.SanPham>
+@using QLKHO.Helper
+@using System.Globalization;
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    var currentPage = ViewData["current"];
+    var countPage = ViewData["countpage"]  ;
+}
+    <partial name="_AlertMessage" model="@TempData["thongbao"]"></partial>
+    
+<h1>Danh sách sản phẩm</h1>
+<div class="d-flex justify-content-between">
+    <a class="btn btn-outline-primary my-2" asp-action="Create">Tạo mới</a>
+    <div class="">
+        <form method="get" asp-action="Index" class=" form-inline mr-auto my-2 mw-100 navbar-search">
+            <div class="input-group">
+                <input name="search" value="@ViewBag.search" class="form-control bg-light border-0 small" placeholder="Tìm theo tên sảm phẩm"
+                       aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="overflow-auto">
+    <table style="min-width: 600px" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.MaSp)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TenSp)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.GiaBan)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SoLuongCo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Photo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DonViTinh)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaSp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenSp)
+                </td>
+                <td>
+                        @item.GiaBan.ToString("C", new CultureInfo("vi-VN"))
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuongCo)
+                </td>
+                <td>
+                    <img class="img-thumbnail" style="width:100px; height:80px; object-fit:cover" src="~/Upload/PhotoSanPham/@item.Photo">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DonViTinh.TenDvt)
+                </td>
+                <td class="d-flex justify-content-around h-100">
+                    <a class="btn btn-outline-success" asp-action="Edit" asp-route-id="@item.MaSp">Sửa</a> |
+                        @{
+                            var id = "SP" + item.MaSp;
+                            var select = "#" + id;
+                        }
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="@select">
+                            Xóa
+                        </button>
+
+                        <!-- The Modal -->
+                        <div class="modal" id="@id">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Xóa Sản phẩm</h4>
+                                        <button type="button" class="btn btn-close" data-bs-dismiss="modal">&times</button>
+                                    </div>
+                                    <form asp-action="Delete" method="post" asp-route-id="@item.MaSp">
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <h5 class="text-center">Bạn có muốn xóa sản phẩm có tên @item.TenSp không ?</h5>
+                                        </div>
+
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Xóa</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+
+</div>
+@{
+    var pagemodel = new PagingModel()
+            {
+                currentPage = int.Parse(currentPage.ToString()),
+                countPage = int.Parse(countPage.ToString()),
+                generateUrl = (int? p) => Url.Action(nameof(Index), new{p = p, search = ViewBag.search})
+            };
+    <div class="float-right">
+        <partial name="_Paging" model="@pagemodel"></partial>
+    </div>
+}

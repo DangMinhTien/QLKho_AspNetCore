@@ -1,0 +1,31 @@
+﻿@page
+@inject SignInManager<AppUser> _signInManager
+@inject UserManager<AppUser> _userManager
+@model QLKHO.Areas.Identity.Pages.Account.Manage.SetAvartarModel
+@{
+    ViewData["Title"] = "Avartar";
+}
+<h4>Thay ảnh đại diện</h4>
+@if (_signInManager.IsSignedIn(User))
+{
+    AppUser user = await _userManager.GetUserAsync(User);
+    <div class="row">
+        <div class="col-md-6">
+            <img id="img_hienthi" style="max-height:200px; max-width: 250px; object-fit: contain" class="float-left" src="~/Upload/Avartar/@user.PhotoAvatar" />
+        </div>
+    </div>
+    <form method="post" asp-route-id="@user.Id" enctype="multipart/form-data">
+        <div class="form-group">
+                <label asp-for="@Model.FileUpLoader"></label>
+                <input id="file_upload" asp-for="@Model.FileUpLoader" class="form-control" />
+                <span class="text-danger" asp-validation-for="@Model.FileUpLoader"></span>
+        </div>
+        <button class="btn btn-primary" type="submit" >Cập nhật</button>
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/upload_img.js"></script>
+}
+
